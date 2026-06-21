@@ -53,11 +53,9 @@ export async function POST(request: NextRequest) {
 
           // Check if it's an image (Subtype = Image)
           try {
-            // @ts-expect-error – low-level PDF-lib access
             const subtype = xObj.get(pdfDoc.context.obj('Subtype'));
             if (!subtype) continue;
 
-            // @ts-expect-error – low-level PDF-lib access
             const streamBytes: Uint8Array = xObj.contents;
             if (!streamBytes || streamBytes.length < 100) continue;
 
@@ -68,7 +66,6 @@ export async function POST(request: NextRequest) {
               .catch(() => null);
 
             if (recompressed && recompressed.length < streamBytes.length) {
-              // @ts-expect-error – low-level mutation
               xObj.contents = recompressed;
             }
           } catch {
