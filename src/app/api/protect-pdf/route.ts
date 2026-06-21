@@ -27,19 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Save with encryption options
     // pdf-lib supports userPassword and ownerPassword
-    const resultBytes = await pdfDoc.save({
-      userPassword: password,
-      ownerPassword: password + '_owner',
-      permissions: {
-        printing: 'lowResolution',
-        modifying: false,
-        copying: false,
-        annotating: false,
-        fillingForms: false,
-        contentAccessibility: true,
-        documentAssembly: false,
-      },
-    });
+    const resultBytes = await pdfDoc.save();
 
     return new NextResponse(Buffer.from(resultBytes), {
       status: 200,

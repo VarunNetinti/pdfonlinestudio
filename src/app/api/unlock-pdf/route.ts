@@ -18,9 +18,8 @@ export async function POST(request: NextRequest) {
     let pdfDoc: PDFDocument;
     try {
       pdfDoc = await PDFDocument.load(bytes, {
-        ignoreEncryption: false,
-        password: password,
-      });
+  ignoreEncryption: true,
+});
     } catch {
       return NextResponse.json({ error: 'Incorrect password. Please check and try again.' }, { status: 401 });
     }
