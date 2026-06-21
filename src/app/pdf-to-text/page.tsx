@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ToolPageLayout from '@/components/ui/ToolPageLayout';
 import DropZone from '@/components/ui/DropZone';
@@ -9,7 +8,6 @@ import ProgressIndicator from '@/components/ui/ProgressIndicator';
 import { cacheDownload } from '@/lib/downloadCache';
 
 export default function PdfToTextPage() {
-  const router = useRouter();
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [format, setFormat] = useState<'txt' | 'md'>('txt');
