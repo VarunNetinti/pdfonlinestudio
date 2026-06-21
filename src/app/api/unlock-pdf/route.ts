@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Re-save without password
     const resultBytes = await pdfDoc.save();
 
-    return new NextResponse(resultBytes, {
+    return new NextResponse(Buffer.from(resultBytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

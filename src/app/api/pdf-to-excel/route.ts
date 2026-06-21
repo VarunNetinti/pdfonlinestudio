@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
     const xlsxBuf = await (buildXlsx(sheets) as unknown as Promise<Buffer>);
-    return new NextResponse(xlsxBuf,{status:200,headers:{
+    return new NextResponse(Buffer.from(xlsxBuf),{status:200,headers:{
       'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition':`attachment; filename="${file.name.replace(/\.pdf$/i,'.xlsx')}"`,
       'Content-Length':String(xlsxBuf.length),

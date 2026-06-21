@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
     });
 
     const pptxBuf = await buildPptx(slides, docName);
-    return new NextResponse(pptxBuf,{status:200,headers:{
+    return new NextResponse(Buffer.from(pptxBuf),{status:200,headers:{
       'Content-Type':'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       'Content-Disposition':`attachment; filename="${file.name.replace(/\.pdf$/i,'.pptx')}"`,
       'Content-Length':String(pptxBuf.length),

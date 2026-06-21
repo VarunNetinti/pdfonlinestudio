@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return new NextResponse(resultBytes, {
+    return new NextResponse(Buffer.from(resultBytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

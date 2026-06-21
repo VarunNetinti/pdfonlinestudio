@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return new NextResponse(zipBuffer, {
+    return new NextResponse(Buffer.from(zipBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',

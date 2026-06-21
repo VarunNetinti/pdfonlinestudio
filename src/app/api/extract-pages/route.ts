@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       const copied = await newDoc.copyPages(srcDoc, indices);
       copied.forEach(p => newDoc.addPage(p));
       const result = await newDoc.save();
-      return new NextResponse(result, {
+      return new NextResponse(Buffer.from(result), {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': 'attachment; filename="extracted.pdf"',

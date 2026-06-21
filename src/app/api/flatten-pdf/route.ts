@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await pdfDoc.save({ useObjectStreams: true });
-    return new NextResponse(result, {
+    return new NextResponse(Buffer.from(result), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="flattened.pdf"',

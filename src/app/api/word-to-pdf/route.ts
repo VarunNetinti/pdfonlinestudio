@@ -316,7 +316,7 @@ export async function POST(request: NextRequest) {
     const pdfBytes = await pdfDoc.save();
     const outName = file.name.replace(/\.(docx?|odt|rtf)$/i, '.pdf');
 
-    return new NextResponse(pdfBytes, {
+    return new NextResponse(Buffer.from(pdfBytes), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     const result = await pdfDoc.save();
     const outName = file.name.replace(/\.(txt|text|md|csv)$/i, '.pdf');
-    return new NextResponse(result, {
+    return new NextResponse(Buffer.from(result), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${outName}"`,

@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     ];
 
     const docxBuf = await buildDocx(sections);
-    return new NextResponse(docxBuf,{status:200,headers:{
+    return new NextResponse(Buffer.from(docxBuf),{status:200,headers:{
       'Content-Type':'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'Content-Disposition':`attachment; filename="${file.name.replace(/\.pdf$/i,'.docx')}"`,
       'Content-Length':String(docxBuf.length),

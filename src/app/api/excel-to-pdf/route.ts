@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
     }
 
     const bytes = await pdfDoc.save();
-    return new NextResponse(bytes,{status:200,headers:{
+    return new NextResponse(Buffer.from(bytes),{status:200,headers:{
       'Content-Type':'application/pdf',
       'Content-Disposition':`attachment; filename="${file.name.replace(/\.[^.]+$/,'.pdf')}"`,
       'Content-Length':String(bytes.length),
