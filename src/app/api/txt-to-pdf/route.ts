@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const text    = await file.text();
     const lines   = text.split(/\r?\n/);
     const pdfDoc  = await PDFDocument.create();
-    const font    = await pdfDoc.embedFont(StandardFonts.CourierPrime || StandardFonts.Courier);
+    const font    = await pdfDoc.embedFont(StandardFonts.Courier);
     const maxW    = PAGE_W - MARGIN * 2;
     const lineH   = fontSize * 1.4;
 

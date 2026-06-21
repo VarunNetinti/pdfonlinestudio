@@ -60,9 +60,8 @@ export async function POST(request: NextRequest) {
         try {
           // Access the raw content stream
           const context = pdfDoc.context;
-          const contentRef = page.node.get(page.node.doc.context.obj('Contents'));
-          if (contentRef) {
-            // Try to get text from content streams
+
+          if (rawContent) {
             pageText = `[Page ${i + 1} content extracted]`;
           }
         } catch {
