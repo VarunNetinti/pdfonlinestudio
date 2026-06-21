@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       try {
         const { node } = page;
         // Access XObject resources on each page
-        const resources = node.Resources();
+        const resources: any = node.Resources();
         if (!resources) continue;
         const xObjects = resources.XObject();
         if (!xObjects) continue;
