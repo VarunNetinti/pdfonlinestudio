@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       updateFieldAppearances: false,
     });
 
-    return new NextResponse(compressed, {
+    return new NextResponse(Buffer.from(compressed), {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
