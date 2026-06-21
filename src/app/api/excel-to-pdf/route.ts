@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
             page.drawText(text,{x:x+4,y:y-rowH+5,size:FONT_SIZE,font,color});
           } catch {}
           // Cell border
-          page.drawRectangle({x,y:y-rowH,width:cw,height:rowH,borderColor:rgb(0.78,0.78,0.78),borderWidth:0.4,color:rgb(0,0,0,0)});
+          page.drawRectangle({x,y:y-rowH,width:cw,height:rowH,borderColor:rgb(0.78,0.78,0.78),borderWidth:0.4,color:rgb(0,0,0)});
           x += cw;
         }
         y -= rowH;
