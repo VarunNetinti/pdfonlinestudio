@@ -1,0 +1,12 @@
+# PdfOnlineStudio — robots.txt
+User-agent: *
+Allow: /
+
+# Block download pages (no SEO value, session-based)
+Disallow: /download
+
+# Block API routes
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://pdfonlinestudio.com/sitemap.xml

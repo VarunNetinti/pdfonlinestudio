@@ -1,0 +1,254 @@
+/* ============================================================
+   PERFORMANCE: No @import — fonts loaded via <link> in layout
+   with preconnect + font-display:swap for zero render blocking
+   ============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Font metric overrides — ELIMINATES CLS from font swap ──── */
+/* These match Fraunces/DM Sans metrics so fallback = no shift  */
+@font-face {
+  font-family: 'Fraunces-fallback';
+  src: local('Georgia');
+  size-adjust: 98%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'DMSans-fallback';
+  src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI');
+  size-adjust: 100%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --font-display: 'Fraunces', 'Fraunces-fallback', Georgia, serif;
+  --font-body: 'DM Sans', 'DMSans-fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+
+  --bg-base:    #f7f5f0;
+  --bg-card:    #ffffff;
+  --text-primary:   #1c1a18;
+  --text-secondary: #3a3733;
+  --text-muted:     #5a5450;   /* 4.6:1 on white — passes WCAG AA */
+  --accent:      #d97706;
+  --accent-hover:#b45309;
+  --border:      #e8e4dc;
+  --shadow:      0 1px 3px rgba(28,26,24,.08), 0 4px 12px rgba(28,26,24,.06);
+  --shadow-lg:   0 8px 24px rgba(28,26,24,.12), 0 2px 8px rgba(28,26,24,.08);
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-synthesis: none;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Grain texture — cheap CSS, no extra HTTP request */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.35;
+  will-change: auto;
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9a8d78; }
+
+/* ── Ad slots ───────────────────────────────────────────────── */
+.ad-slot {
+  @apply flex items-center justify-center rounded-xl border-2 border-dashed border-ink-200 bg-ink-50/50 text-sm font-mono tracking-wide;
+  color: #635a4e; /* ink-600 — 5.9:1 on #f7f5f0 — passes WCAG AA ✅ */
+  min-height: 90px;
+  /* Reserve explicit height to prevent CLS */
+  contain: layout;
+}
+
+/* ── Tool cards ─────────────────────────────────────────────── */
+.tool-card {
+  @apply bg-white border border-ink-100 rounded-2xl p-6;
+  @apply hover:border-amber-200 hover:shadow-lg transition-all duration-200;
+  @apply flex flex-col;
+  /* Explicit min-height prevents layout shift */
+  min-height: 180px;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn-primary {
+  @apply inline-flex items-center gap-2 px-6 py-3 bg-ink-900 text-white font-semibold rounded-xl transition-all duration-200;
+  @apply hover:bg-ink-800 active:scale-[0.98];
+  min-height: 48px; /* touch target */
+}
+.btn-accent {
+  @apply inline-flex items-center gap-2 px-6 py-3 bg-amber-500 text-white font-semibold rounded-xl transition-all duration-200;
+  @apply hover:bg-amber-600 active:scale-[0.98] shadow-sm hover:shadow;
+  min-height: 48px;
+}
+.btn-outline {
+  @apply inline-flex items-center gap-2 px-6 py-3 border-2 border-ink-300 text-ink-800 font-medium rounded-xl transition-all duration-200;
+  @apply hover:border-ink-500 hover:bg-ink-50;
+  min-height: 48px;
+}
+
+/* ── Progress bar ───────────────────────────────────────────── */
+.progress-bar       { @apply h-1.5 bg-ink-100 rounded-full overflow-hidden; }
+.progress-bar-fill  {
+  @apply h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all duration-300;
+  will-change: width;
+}
+
+/* ── Lazy section — below-fold sections get content-visibility ── */
+.section-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* ── Animation delays ───────────────────────────────────────── */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* ── SEO content blocks ─────────────────────────────────────── */
+/* CONTRAST FIX: changed text-ink-700 (previously ink-600/500) */
+.seo-prose h2  { @apply text-2xl font-display font-semibold text-ink-900 mb-3 mt-8; }
+.seo-prose h3  { @apply text-lg font-display font-semibold text-ink-800 mb-2 mt-5; }
+.seo-prose p   { @apply text-ink-700 leading-relaxed mb-3 text-sm; }
+.seo-prose ul  { @apply list-disc list-inside text-ink-700 text-sm space-y-1 mb-3; }
+.seo-prose strong { @apply text-ink-900 font-semibold; }
+.seo-prose a   { @apply text-amber-700 underline underline-offset-2 hover:text-amber-900; }
+
+/* ── Focus ring (accessibility) ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #d97706;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Skip link (accessibility) ──────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 10000;
+  @apply bg-ink-900 text-white px-4 py-2 rounded-b-xl text-sm font-medium;
+  transition: top 0.15s;
+}
+.skip-link:focus { top: 0; }
+
+/* ── Article / Blog prose styles ────────────────────────────── */
+.prose-article h2 {
+  @apply text-2xl font-display font-semibold text-ink-900 mb-4 mt-10;
+  scroll-margin-top: 5rem;
+}
+.prose-article h3 {
+  @apply text-xl font-display font-semibold text-ink-800 mb-3 mt-6;
+  scroll-margin-top: 5rem;
+}
+.prose-article p   { @apply text-ink-700 leading-relaxed mb-4 text-base; }
+.prose-article ul, .prose-article ol { @apply text-ink-700 text-base mb-4 pl-5 space-y-1.5; }
+.prose-article ul  { @apply list-disc; }
+.prose-article ol  { @apply list-decimal; }
+.prose-article li  { @apply leading-relaxed; }
+.prose-article strong { @apply text-ink-900 font-semibold; }
+.prose-article em  { @apply italic; }
+.prose-article a   { @apply text-amber-700 font-medium underline underline-offset-2 hover:text-amber-900 transition-colors; }
+.prose-article pre {
+  @apply bg-ink-950 text-ink-100 rounded-xl p-5 overflow-x-auto text-sm leading-relaxed mb-4 font-mono;
+}
+.prose-article code        { @apply bg-ink-100 text-ink-800 px-1.5 py-0.5 rounded text-sm font-mono; }
+.prose-article pre code    { @apply bg-transparent text-ink-100 p-0; }
+.prose-article blockquote  { @apply border-l-4 border-amber-400 pl-4 py-1 my-4 text-ink-700 italic; }
+.prose-article hr          { @apply border-ink-100 my-8; }
+
+/* ── Image optimisation ──────────────────────────────────────── */
+/* Prevent layout shift on lazy-loaded images */
+img { max-width: 100%; height: auto; }
+img[width][height] { aspect-ratio: attr(width) / attr(height); }
+
+/* ── Composited animations only ──────────────────────────────── */
+/* PERFORMANCE FIX: Only animate transform/opacity (GPU composited) */
+/* Never animate top/left/width/height — causes layout reflow */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes bounceGentle {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-fade-up   { animation: fadeUp 0.6s ease forwards; }
+.animate-fade-in   { animation: fadeIn 0.4s ease forwards; }
+.animate-slide-in  { animation: slideIn 0.5s ease forwards; }
+.animate-bounce-gentle { animation: bounceGentle 2s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-spin-slow  { animation: spin 3s linear infinite; }
+
+/* ── Reduce motion for accessibility ─────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Touch targets for mobile 95+ score ─────────────────────── */
+/* Minimum 44x44px per WCAG 2.5.5 */
+button:not(.no-min-size),
+a:not(.no-min-size),
+[role="button"]:not(.no-min-size) {
+  min-height: 44px;
+}
+
+/* ── Print styles ────────────────────────────────────────────── */
+@media print {
+  .skip-link, nav, footer, [aria-label="Advertisement"], .ad-slot {
+    display: none !important;
+  }
+  body { font-size: 12pt; color: #000; background: #fff; }
+}
